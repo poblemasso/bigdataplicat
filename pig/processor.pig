@@ -12,8 +12,6 @@ comp3 = foreach avg_rate generate group, ((AVG>0)? 1 : 0) as avg_positiu:int, AV
 comp4 = foreach avg_rate generate group, ((group.label==0)? 1 : 0) as no_label:int, AVG;
 /* dump comp4; */
 comp5 = foreach avg_rate generate group, (((AVG>=0) AND (group.label==1)) OR ((AVG<0) AND (group.label==0))? 1 : 0) as c:int, AVG;
-comp5 = foreach avg_rate generate group, (((AVG>=0) AND (group.label==1)) OR ((AVG<0) AND (group.label==0))? 1 : NULL) as c:int, AVG;
-comp5 = foreach avg_rate generate group, (((AVG>=0) AND (group.label==1)) OR ((AVG<0) AND (group.label==0))? true : false) as c:boolean, AVG;
 /* dump comp5; */
 STORE avg_rate INTO '/user/cloudera/pig_analisis_opinions/resultat_analisis_opinions' USING org.apache.pig.piggybank.storage.CSVExcelStorage(',', 'YES_MULTILINE');
 avg_rate_group = GROUP avg_rate ALL;
