@@ -1,5 +1,5 @@
 REGISTER /usr/lib/pig/piggybank.jar;
-extract_details = LOAD '/user/cloudera/pig_practica/critiquescinematografiques.csv' USING org.apache.pig.piggybank.storage.CSVExcelStorage(',', 'YES_MULTILINE')  AS (text:chararray, label:int, id:int);
+extract_details = LOAD '/user/cloudera/pig_latin/critiquescinematografiques.csv' USING org.apache.pig.piggybank.storage.CSVExcelStorage(',', 'YES_MULTILINE')  AS (text:chararray, label:int, id:int);
 tokens = foreach extract_details generate id,label,text, FLATTEN(TOKENIZE(text)) As word;
 dictionary = load '/user/cloudera/pig_practica/AFINN.txt' using PigStorage('\t') AS(word:chararray,rating:int);
 word_rating = join tokens by word left outer, dictionary by word using 'replicated';
@@ -20,7 +20,7 @@ records_each = FOREACH comp5_group
 
                     GENERATE COUNT(trues) as trues, COUNT(falses) as falses;
                    };
-STORE records_each INTO '/user/cloudera/WorkspacePigPractica/resultat_analisis_opinions_count' USING org.apache.pig.piggybank.storage.CSVExcelStorage(',', 'YES_MULTILINE');
+STORE records_each INTO '/user/cloudera/WorkspacePigPractica/out_valorOpinio' USING org.apache.pig.piggybank.storage.CSVExcelStorage(',', 'YES_MULTILINE');
 
 rating_count= foreach word_group
   {
@@ -33,4 +33,4 @@ comp5_nogroup = foreach comp5 generate group.id, group.text, group.label, c;
 
 rating_join = join comp5_nogroup by (id, text, label) left outer, rating_nogroup by (id, text, label) using 'replicated';
 rating_final = foreach rating_join generate comp5_nogroup::id as id, comp5_nogroup::text as text, comp5_nogroup::label as label, comp5_nogroup::c as c, rating_nogroup::n_positives as n_positives, rating_nogroup::n_negatives as n_negatives;
-STORE rating_final INTO '/user/cloudera/WorkspacePigPractica/resultat_analisis_opinions_words' USING org.apache.pig.piggybank.storage.CSVExcelStorage(',', 'YES_MULTILINE');
+STORE rating_final INTO '/user/cloudera/WorkspacePigPractica/out_valorOpinio' USING org.apache.pig.piggybank.storage.CSVExcelStorage(',', 'YES_MULTILINE');
