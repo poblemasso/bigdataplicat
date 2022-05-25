@@ -8,7 +8,7 @@ rating = foreach word_rating generate tokens::id as id,tokens::text as text, tok
 word_group = group rating by (id,text,label);
 avg_rate = foreach word_group generate group, AVG(rating.rate) as AVG;
 comp5 = foreach avg_rate generate group, (((AVG>=0) AND (group.label==1)) OR ((AVG<0) AND (group.label==0))? 1 : 0) as c:int, AVG;
-STORE comp5 INTO '/user/cloudera/WorkspacePigPractica/resultat_analisis_opinions' 
+STORE comp5 INTO '/user/cloudera/WorkspacePigPractica/out_op' 
  USING org.apache.pig.piggybank.storage.CSVExcelStorage(',', 'YES_MULTILINE'); 
 
 comp5_group = GROUP comp5 ALL;
